@@ -22,7 +22,7 @@ def get_weather():
   url = 'http://t.weather.sojson.com/api/weather/city/101010100'
   res = requests.get(url).json()
   weather = res['data']['forecast'][0]
-  return weather['type'], weather['notice']
+  return weather['type'], weather['high'], weather['low'], weather['notice']
 
 def get_count():
   delta = today - datetime.strptime(start_date, "%Y-%m-%d")
@@ -47,8 +47,8 @@ def get_random_color():
 client = WeChatClient(app_id, app_secret)
 
 wm = WeChatMessage(client)
-wea, notice = get_weather()
-data = {"weather":{"value":wea},"notice":{"value":notice},"love_days":{"value":get_count()},"birthday_left":{"value":get_birthday()},"words":{"value":get_words(), "color":get_random_color()}}
+wea, high, low, notice = get_weather()
+data = {"weather":{"value":wea},"high":{"value":high},"low":{"value":low},"notice":{"value":notice},"love_days":{"value":get_count()},"birthday_left":{"value":get_birthday()},"words":{"value":get_words(), "color":get_random_color()}}
 res = wm.send_template(user_id, template_id, data)
 
 print(res)
