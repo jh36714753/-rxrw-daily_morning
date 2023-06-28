@@ -19,10 +19,18 @@ template_id = os.environ["TEMPLATE_ID"]
 
 
 def get_weather():
-  url = 'http://t.weather.sojson.com/api/weather/city/101010100'
-  res = requests.get(url).json()
-  weather = res['data']['forecast'][0]
-  return weather['type'], weather['high'], weather['low'], weather['notice'], weather['ymd'], weather['week']
+  url = "https://api.seniverse.com/v3/weather/daily.json?key=ShIAlpiD-3tTqm7zD&location=beijing&language=zh-Hans&unit=c&start=0&days=5"
+  r = requests.get(url, params=params)
+
+  data = r.json()["results"]
+  
+  date = data[0]['daily'][0]['date']
+  text_day = data[0]['daily'][0]['text_day']
+  text_night = data[0]['daily'][0]['text_night']
+  high = data[0]['daily'][0]['high']
+  low = data[0]['daily'][0]['low']
+
+  return date, text_day, text_night, high, low
 
 def get_count():
   delta = today - datetime.strptime(start_date, "%Y-%m-%d")
@@ -47,8 +55,8 @@ def get_random_color():
 client = WeChatClient(app_id, app_secret)
 
 wm = WeChatMessage(client)
-wea, high, low, notice, ymd, week = get_weather()
-data = {"ymd":{"value":ymd}, "week":{"value":week}, "weather":{"value":wea}, "high":{"value":high}, "low":{"value":low}, "notice":{"value":notice}, "love_days":{"value":get_count()}, "birthday_left":{"value":get_birthday()}, "words":{"value":get_words(), "color":get_random_color()}}
+date, text_day, text_night, high, low = get_weather()
+data = {"date":{"value":date}, "text_day":{"value":text_day}, "text_night":{"value":text_night}, "high":{"value":high}, "low":{"value":low}, "love_days":{"value":get_count()}, "birthday_left":{"value":get_birthday()}, "words":{"value":get_words(), "color":get_random_color()}}
 res = wm.send_template(user_id, template_id, data)
 
 print(res)
