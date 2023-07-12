@@ -17,6 +17,7 @@ app_secret = os.environ["APP_SECRET"]
 user_id = os.environ["USER_ID"]
 template_id = os.environ["TEMPLATE_ID"]
 
+n_lines = 20
 
 def get_weather():
   url = "https://api.seniverse.com/v3/weather/daily.json?key=ShIAlpiD-3tTqm7zD&location=beijing&language=zh-Hans&unit=c&start=0&days=5"
@@ -51,6 +52,20 @@ def get_words():
 def get_random_color():
   return "#%06x" % random.randint(0, 0xFFFFFF)
 
+def read_law_quotes(n_lines_):
+    n = random.randint(0, n_lines_)
+    
+    file = open('law_quotes.txt', 'r')
+    law_quotes = file.readlines()  # 读取所有行
+    #print(law_quotes[n])
+    file.close()
+    
+    file = open('law_quotes_authors.txt', 'r')
+    law_quotes_authors = file.readlines() 
+    #print(law_quotes_authors[n])
+    file.close()
+    
+    return law_quotes[n], law_quotes_authors[n]
 
 client = WeChatClient(app_id, app_secret)
 
@@ -60,7 +75,18 @@ params = {
 
 wm = WeChatMessage(client)
 date, text_day, text_night, high, low = get_weather()
-data = {"date":{"value":date}, "text_day":{"value":text_day}, "text_night":{"value":text_night}, "high":{"value":high}, "low":{"value":low}, "love_days":{"value":get_count()}, "birthday_left":{"value":get_birthday()}, "words":{"value":get_words(), "color":get_random_color()}}
+law_quote, law_quote_author = read_law_quotes(n_lines)
+data = {"date":{"value":date},
+        "text_day":{"value":text_day},
+        "text_night":{"value":text_night},
+        "high":{"value":high},
+        "low":{"value":low}, 
+        "love_days":{"value":get_count()},
+        "birthday_left":{"value":get_birthday()}, 
+        "words":{"value":get_words(), "color":get_random_color()},
+        "law_quote":{"value":law_quote},
+        "law_quote_author":{"value":law_quote_author}}
+
 res = wm.send_template(user_id, template_id, data)
 
 print(res)
