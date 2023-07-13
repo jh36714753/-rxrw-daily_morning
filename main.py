@@ -17,8 +17,6 @@ app_secret = os.environ["APP_SECRET"]
 user_id = os.environ["USER_ID"]
 template_id = os.environ["TEMPLATE_ID"]
 
-n_lines = 20
-
 def get_weather():
   url = "https://api.seniverse.com/v3/weather/daily.json?key=ShIAlpiD-3tTqm7zD&location=beijing&language=zh-Hans&unit=c&start=0&days=5"
   r = requests.get(url, params=params)
@@ -52,18 +50,17 @@ def get_words():
 def get_random_color():
   return "#%06x" % random.randint(0, 0xFFFFFF)
 
-def read_law_quotes(n_lines_):
-    n = random.randint(0, n_lines_)
+def read_law_quotes():
     
     file = open('law_quotes.txt', 'r')
     law_quotes = file.readlines()  # 读取所有行
-    #print(law_quotes[n])
     file.close()
     
     file = open('law_quotes_authors.txt', 'r')
     law_quotes_authors = file.readlines() 
-    #print(law_quotes_authors[n])
     file.close()
+    
+    n = random.randint(0, len(law_quotes)-1)
     
     return law_quotes[n], law_quotes_authors[n]
 
@@ -75,7 +72,7 @@ params = {
 
 wm = WeChatMessage(client)
 date, text_day, text_night, high, low = get_weather()
-law_quote, law_quote_author = read_law_quotes(n_lines)
+law_quote, law_quote_author = read_law_quotes()
 data = {"date":{"value":date},
         "text_day":{"value":text_day},
         "text_night":{"value":text_night},
